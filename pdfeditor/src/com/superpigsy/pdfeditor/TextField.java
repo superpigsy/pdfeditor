@@ -1,15 +1,17 @@
+package com.superpigsy.pdfeditor;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 
 public class TextField extends PdfField
 {
-	public String image;
 	public String font;
 	public int font_size;
 	public String text;
@@ -27,9 +29,9 @@ public class TextField extends PdfField
 	}
 	
 
-	public TextField(String image,float x,float y)
+	public TextField(String text,float x,float y)
 	{
-		this.image = image;
+		this.text = text;
 		this.offsetX = x;
 		this.offsetY = y;
 	}
@@ -72,7 +74,7 @@ public class TextField extends PdfField
 	
 	
 	@Override
-	public void draw() throws IOException
+	public void draw(PDDocument document,PDPageContentStream contentStream) throws IOException
 	{
 		PDFont pdfont = PDType0Font.load(document, new File(font));
 		ArrayList<String> texts = new ArrayList<String>();

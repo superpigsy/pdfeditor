@@ -1,6 +1,8 @@
+package com.superpigsy.pdfeditor;
 import java.awt.Color;
 import java.io.IOException;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 public class SectorField extends PdfField {
@@ -20,36 +22,42 @@ public class SectorField extends PdfField {
 		this.radius = radius;
 	}
 	
+	public SectorField(float offsetX, float offsetY, float radius, float targetAngle, Color color) {
+
+		this(offsetX,offsetY,radius,color);
+		this.targetAngle = targetAngle;
+		this.startAngle = 90;
+	}
+	
 	public SectorField(float offsetX, float offsetY, float radius, float startAngle, float targetAngle, Color color) {
 
 		this(offsetX,offsetY,radius,color);
 		this.targetAngle = targetAngle;
 		this.startAngle = startAngle;
-	
 	}
 
 	@Override
-	public void draw() throws IOException {
+	public void draw(PDDocument document,PDPageContentStream contentStream) throws IOException {
 
 		if (targetAngle - startAngle >= 360) {
-
+		
 			final float k = 0.552284749831f;
 			contentStream.setNonStrokingColor(color.getRed(), color.getGreen(), color.getBlue());
-			contentStream.moveTo(offsetX - radius, offsetX);
-			contentStream.curveTo(offsetX - radius, offsetX + k * radius, offsetX - k * radius, offsetX + radius,
-					offsetX, offsetX + radius);
+			contentStream.moveTo(offsetX - radius, offsetY);
+			contentStream.curveTo(offsetX - radius, offsetY + k * radius, offsetX - k * radius, offsetY + radius, offsetX, offsetY + radius);
 
-			contentStream.curveTo(offsetX + k * radius, offsetX + radius, offsetX + radius, offsetX + k * radius,
-					offsetX + radius, offsetX);
-			contentStream.curveTo(offsetX + radius, offsetX - k * radius, offsetX + k * radius, offsetX - radius,
-					offsetX, offsetX - radius);
-			contentStream.curveTo(offsetX - k * radius, offsetX - radius, offsetX - radius, offsetX - k * radius,
-					offsetX - radius, offsetX);
+			contentStream.curveTo(offsetX + k * radius, offsetY + radius, offsetX + radius, offsetY + k * radius, offsetX + radius, offsetY);
+			contentStream.curveTo(offsetX + radius, offsetY - k * radius, offsetX + k * radius, offsetY - radius, offsetX, offsetY - radius);
+			contentStream.curveTo(offsetX - k * radius, offsetY - radius, offsetX - radius, offsetY - k * radius, offsetX - radius, offsetY);
 			contentStream.fill();
+			
 		} else {
 
 			targetAngle *= -1;
-			contentStream.moveTo(super.offsetX, super.offsetX);
+		
+			double r = this.radius;
+			
+			contentStream.moveTo(offsetX, offsetY);
 
 			contentStream.setNonStrokingColor(color.getRed(), color.getGreen(), color.getBlue());
 			targetAngle = (Math.abs(targetAngle) > 360) ? 360 : targetAngle;
@@ -62,21 +70,20 @@ public class SectorField extends PdfField {
 
 			startAngle = startAngle * Math.PI / 180;
 
-			contentStream.lineTo((float) (offsetX + radius * Math.cos(startAngle)),
-					(float) (offsetY + radius * Math.sin(startAngle)));
+			contentStream.lineTo((float) (offsetX + r * Math.cos(startAngle)), (float) (offsetY + r * Math.sin(startAngle)));
 
 			for (int i = 1; i <= n; i++) {
 				startAngle += angleA;
 
 				double angleMid = startAngle - angleA / 2;
 
-				double bx = offsetX + radius / Math.cos(angleA / 2) * Math.cos(angleMid);
+				double bx = offsetX + r / Math.cos(angleA / 2) * Math.cos(angleMid);
 
-				double by = offsetY + radius / Math.cos(angleA / 2) * Math.sin(angleMid);
+				double by = offsetY + r / Math.cos(angleA / 2) * Math.sin(angleMid);
 
-				double cx = offsetX + radius * Math.cos(startAngle);
+				double cx = offsetX + r * Math.cos(startAngle);
 
-				double cy = offsetY + radius * Math.sin(startAngle);
+				double cy = offsetY + r * Math.sin(startAngle);
 
 				contentStream.curveTo((float) bx, (float) by, (float) cx, (float) cy, (float) cx, (float) cy);
 			}
@@ -88,5 +95,4 @@ public class SectorField extends PdfField {
 			contentStream.fill();
 		}
 	}
-
 }

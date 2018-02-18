@@ -1,3 +1,4 @@
+package com.superpigsy.pdfeditor;
 
 import java.awt.Color;
 import java.io.File;
@@ -31,9 +32,7 @@ public class PdfEditor {
 			
 			for(int i=0;i<textFields.size();i++)
 			{
-				PdfField field = textFields.get(i);
-				field.setContentStream(contentStream);
-				field.draw();
+				textFields.get(i).draw(document,contentStream);
 			}
 
 			

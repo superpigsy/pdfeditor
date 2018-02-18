@@ -1,3 +1,4 @@
+package com.superpigsy.pdfeditor;
 import java.awt.Color;
 import java.io.IOException;
 
@@ -10,18 +11,10 @@ public abstract class PdfField
 	public float offsetY;
 	
 
-	public Color color = Color.BLACK;;
+	public Color color = Color.BLACK;
+	
 	PDDocument document;
 	PDPageContentStream contentStream;
-
-	public void setContentStream(PDPageContentStream contentStream)
-	{
-		this.contentStream = contentStream;
-	}
 	
-	public void setDocument(PDDocument document) {
-		this.document = document;
-	}
-	
-	public abstract void draw() throws IOException;
+	public abstract void draw(PDDocument document,PDPageContentStream contentStream) throws IOException;
 }
